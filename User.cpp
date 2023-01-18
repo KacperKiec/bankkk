@@ -1,4 +1,4 @@
-#include "naglowki.h"
+#include "User.h"
 
 void clearScreen() {
 #if defined (_WIN32) || defined (_WIN64)
