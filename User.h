@@ -6,6 +6,7 @@
 #include <fstream>
 #include <random>
 #include <time.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ void forgotPassword();
 
 class User {
 public:
-	struct currency
+	struct currency // klasa zagnie¿d¿ona
 	{
 	public:
 		string name;
@@ -29,7 +30,7 @@ public:
 	friend void forgotPassword();
 	friend void signIn();
 	friend void loginMenu();
-	virtual void transfer(); //itd
+	virtual void transfer() = 0; //itd
 };
 
 class loggedUser : public User {
@@ -47,5 +48,5 @@ public:
 	string getFullName();
 	currency getCurrency(int index);
 	void accMenu();
-	void transfer();
+	virtual void transfer()override;
 };
