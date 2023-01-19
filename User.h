@@ -22,7 +22,7 @@ public:
 	{
 	public:
 		string name;
-		double value;
+		float value;
 	};
 
 public:
@@ -31,6 +31,7 @@ public:
 	friend void signIn();
 	friend void loginMenu();
 	virtual void transfer() = 0; //itd
+	virtual void exchange() = 0;
 };
 
 class loggedUser : public User {
@@ -41,12 +42,14 @@ private:
 	string firstName;
 	string lastName;
 	array<currency, 5> account;
-
-public:
-	loggedUser(int id, string login, int accountNumber, string firstName, string lastName, int pln, int eur, int usd, int gbp, int czk);
+	void updateAcc(int currencyIndexInFile, float value, int id); //indexy w pliku textowym PLN-6, EUR-7, USD-8, GBP-9, CZK-10
 	int getId();
 	string getFullName();
 	currency getCurrency(int index);
+	int getAccNumber();
+public:
+	loggedUser(int id, string login, int accountNumber, string firstName, string lastName, float pln, float eur, float usd, float gbp, float czk);
 	void accMenu();
-	virtual void transfer()override;
+	virtual void transfer() override;
+	virtual void exchange() override;
 };

@@ -12,11 +12,11 @@ void clearScreen() {
 #endif
 }
 
-loggedUser::loggedUser(int id, string login, int accountNumber, string firstName, string lastName, int pln, int eur, int usd, int gbp, int czk)
+loggedUser::loggedUser(int id, string login, int accountNumber, string firstName, string lastName, float pln, float eur, float usd, float gbp, float czk)
 {
-	id = id;
+	this->id = id;
 	this->login = login;
-	accountNumber = accountNumber;
+	this->accountNumber = accountNumber;
 	this->firstName = firstName;
 	this->lastName = lastName;
 
@@ -55,18 +55,23 @@ User::currency loggedUser::getCurrency(int index) {
 	return account[index];
 }
 
+int loggedUser::getAccNumber() {
+	return accountNumber;
+}
+
 void loggedUser::accMenu() {
-	cout << "\t\t\tWitaj " + getFullName() << "\n\n\n";
+	cout << "\t\t\tWitaj " + getFullName() << "\t\tTwój numer konta to: " << getAccNumber() << "\n\n\n";
 	cout << "\t\t\tTwój stan konta: \n\n";
 	for (int i = 0; i < 5; i++)
 	{
-		cout << "\t\t\t" << getCurrency(i).value << " " << getCurrency(i).name << endl;
+		cout << "\t\t\t"<< fixed <<setprecision(2) <<getCurrency(i).value << " " << getCurrency(i).name << endl;
 	}
 
 	cout << "\n\n\n\t\t\tDostêpne operacje: \n\n";
 	cout << "\t\t\t1. Przelew\n\n";
-	cout << "\t\t\t2. Wyloguj\n\n";
-	cout << "\t\t\t<1-2>: ";
+	cout << "\t\t\t2. Przewalutowanie\n\n";
+	cout << "\t\t\t3. Wyloguj\n\n";
+	cout << "\t\t\t<1-3>: ";
 
 	int operation;
 	cin >> operation;
@@ -75,6 +80,9 @@ void loggedUser::accMenu() {
 		clearScreen();
 		transfer();
 	case 2:
+		clearScreen();
+		exchange();
+	case 3:
 		clearScreen();
 		loginMenu();
 	default:
@@ -230,4 +238,124 @@ void loggedUser::transfer() {
 	cin >> a;
 
 	plik.close();
+}
+
+
+void loggedUser::exchange() {
+	unsigned int option1, option2, operation;
+	float value, afterOperation, newValue{};
+	double pln{ getCurrency(0).value };
+	string line, choice;
+	vector<string> rate;
+
+	cout << "\n\n\t\t\tDostêpne operacje:\n\n\t\t\t1.Sprzeda¿\n\n\t\t\t2.Kupno\n\n\t\t\t3.Wróæ do menu\n\n\t\t\t<1-3>: ";
+	cin >> option1;
+
+	clearScreen();
+	if (option1 == 1) choice = "sprzedaæ";
+	if (option1 == 2) choice = "kupiæ";
+	if (option1 == 3) { choice = "kupiæ"; accMenu(); }
+	cout << "\t\t\t\t\t\t\t" << fixed << setprecision(2) << getCurrency(0).value << " " << getCurrency(0).name << endl;
+	cout << "\t\t\tTwój stan walut:\n";
+	for (int i = 1; i < 5; i++)
+	{
+		cout << "\t\t\t"<< i <<") " << fixed << setprecision(2) << getCurrency(i).value << " " << getCurrency(i).name << endl;
+	}
+	cout << "\n\n\t\t\tWybierz walute któr¹ chcesz " << choice << "\n\t\t\t<1 - 4>: ";
+	cin >> option2;
+	cout << "\n\n\t\t\tJak¹ sumê pieniêdzy chcesz " << choice << "\n\t\t\t(aby pomin¹æ wybierz 0)\n\t\t\t<iloœæ w wybranej walucie>: ";
+	while (cin >> value) {
+		if (option1 == 1 && (value < 0 || value > getCurrency(option2).value)) {
+			clearScreen();
+			cout << "\n\t\t\tWpisz poprawn¹ sumê pieniêdzy!\n\t\t\t(aby pomin¹æ wybierz 0)\n\t\t\t<iloœæ w wybranej walucie>: ";
+		}
+
+		else if (option1 == 2 && (pln - value < 0 || value < 0)) {
+			clearScreen();
+			cout << "\n\t\t\tWpisz poprawn¹ sumê pieniêdzy!\n\t\t\t<iloœæ w wybranej walucie>: ";
+		}
+
+		else break;
+	}
+
+	ifstream plik("exchangeRate.txt");
+	if (plik.good() == false)
+	{
+		cout << "\t\t\tWyst¹pi³ b³¹d!";
+		exit(0);
+	}
+
+	while (!plik.eof()) {
+		getline(plik, line, '/');
+		rate.push_back(line);
+
+	}
+	plik.close();
+
+	operation = stoi(rate.at((option2 - 1) * 2 + option1 + 2));
+	afterOperation = value * (operation / static_cast<float>(100)); //w przeliczeniu na z³otówki
+
+	newValue = getCurrency(option2).value;
+
+	if (option1 == 1) {
+		pln += afterOperation;
+		newValue -= value;
+	}
+	if (option1 == 2) {
+		pln -= afterOperation;
+		newValue += value;
+	}
+
+	updateAcc(6, pln, getId());
+	updateAcc(option2 + 6, newValue, getId());
+	clearScreen();
+	accMenu();
+}
+
+void loggedUser::updateAcc(int currencyIndexInFile, float value, int id) {
+	string text;
+	vector<string> data;
+	int temp{ 0 };
+
+	fstream file;
+	file.open("konta.txt", ios::in);
+
+	if (file.good() == false)
+	{
+		cout << "\t\t\tWyst¹pi³ b³¹d!";
+		exit(0);
+	}
+	while (!file.eof()) {
+		while (getline(file, text, ';')) {
+			data.push_back(text);
+		}
+	}
+
+	temp = id * 11 + currencyIndexInFile;
+	data.at(temp) = to_string(value);
+	cout << temp;
+
+	file.close();
+
+	file.open("konta.txt", ios::out);
+	if (file.is_open()) {
+		file << "";
+		file.close();
+	}
+	else {
+		cout << "Wyst¹pi³ problem!";
+		exit(0);
+	}
+
+	file.open("konta.txt", ios::app);
+	if (file.good() == false) {
+		cout << "Wyst¹pi³ problem";
+		exit(0);
+	}
+	else {
+		for (int i = 0; i < data.size(); i++) {
+			file << data.at(i) << ";";
+		}
+		file.close();
+	}
 }

@@ -154,7 +154,7 @@ void signIn()
 	int x = 0;
 	bool statusl = false, statusp = false;
 
-	cout << "\t\t\tLogin: ";
+	cout << "\n\n\t\t\tLogin: ";
 	cin >> login;
 
 	ifstream plik("konta.txt");
@@ -251,7 +251,7 @@ void signIn()
 
 	plik.close();
 
-	loggedUser loggedUsr(stoi(id), login, stoi(accNr), name, lastname, stod(pln), stod(eur), stod(usd), stod(gbp), stod(czk));
+	loggedUser loggedUsr(stoi(id), login, stoi(accNr), name, lastname, stof(pln), stof(eur), stof(usd), stof(gbp), stof(czk));
 
 	loggedUsr.accMenu(); // przejscie do menu w profilu
 
