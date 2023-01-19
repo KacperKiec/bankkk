@@ -1,5 +1,8 @@
-0;kambolo12;1000041;kamil;boloz;kamil12;45,570000;0;0,000000;0,000000;23;
+0;kambolo12;1000041;kamil;boloz;kamil12;19,610001;5,500000;0,000000;0,000000;23;
 1;marek123;1025103;marek;grechuta;elo123;0;0;0;0;8;
 2;maciek2;1003625;maciek;maciek;asdfg;0;0;0;0;0;
 3;maciek12;1007198;maciek;maciek;okokl;0;0;0;0;0;
-;
+4;kammiill;1005603;kammil;boloooz;kamilllll;0;0;0;0;0;
+5;kamil12222;1006184;kamil;boloz;kamilll;0;0;0;0;0;
+6;kamill;1006237;kamillll;lafsdf;kfkffkf;0;0;0;0;0;
+7;kambolo122;1019609;kamil;boloz;kamil12;0;0;0;0;0;
