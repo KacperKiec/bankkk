@@ -140,56 +140,56 @@ LoggedUser* signIn()
 	clearScreen();
 	string login, password, userpassword, text;
 	string id, name, lastname, pln, eur, usd, gbp, czk, accNr;
-	int x = 0;
 	bool statusl = false, statusp = false;
+	int x = 0;
+	vector<string>pos;
+
+	ifstream file("konta.txt");
+
+	if (file.good()) {	//wpisywanie danych do wektora
+		while (getline(file, text, ';')) {
+			pos.push_back(text);
+		}
+		file.close();
+	}
+	else {
+		cout << "Wyst¹pi³ problem!";
+	}
+	file.close();
 
 	cout << "\n\n\t\t\tLogin: ";
 	cin >> login;
 
-	ifstream plik("konta.txt");
-	if (plik.good() == false)
-	{
-		cout << "\t\t\tWyst¹pi³ b³¹d!";
-		exit(0);
-	}
-
-	while (!plik.eof())
-	{
-		while (getline(plik, text))
-		{
-			if (!(string::npos == text.find(login))) //sprawdza czy istnieje uzytkownik o podanym loginie
-			{
+	while (!statusl) {
+		for (int i = 1; i < pos.size(); i += 11) {
+			if (pos.at(i) == login) {
 				statusl = true;
 				break;
 			}
+			x++;
 		}
-		if (statusl == false)
-		{
-			while (true)
-			{
-				clearScreen();
-				cout << "\t\t\tKonto o podanym loginie nie istnieje!\n\n\n";
-				cout << "\t\t\t|Naciœnij 1. aby SPRÓBOWAÆ PONOWNIE.\n\n\n";
-				cout << "\t\t\t|Naciœnij 2. aby wróciæ do MENU G£ÓWNE.\n\n\n";
-				cout << "\t\t\t<1-2>: ";
-				int UserChoice;
-				cin >> UserChoice;
-				switch (UserChoice)
-				{
-				case 1:
-					signIn();
-				case 2:
-					clearScreen();
-					loginMenu();
-				default:
-					clearScreen();
-					continue;
-				}
-			}
+		if (!statusl) {
+			
+			clearScreen();
+			cout << "\t\t\tKonto o podanym loginie nie istnieje!\n\n\n";
+			cout << "\t\t\tSpróbuj ponownie: ";
+			cin >> login;
+			x = 0;
 		}
-		break;
 	}
 
+	ifstream plik("konta.txt");
+	if (!plik.good()) {
+		cout << "Wyst¹pi³ b³ad!";
+		exit(0);
+	}
+
+	for (int i = 0; i <= x; i++) {
+		getline(plik, text);
+	}
+	plik.close();
+	
+	x = 0;
 	for (int j = 0; j < text.length(); j++)
 	{
 		if (x == 5)
@@ -238,8 +238,8 @@ LoggedUser* signIn()
 	gbp.pop_back();
 	czk.pop_back();
 
-	plik.close();
-	LoggedUser* user = new LoggedUser(stoi(id), login, stoi(accNr), name, lastname, stod(pln), stod(eur), stod(usd), stod(gbp), stod(czk));
+
+	LoggedUser* user = new LoggedUser(stoi(id), login, stoi(accNr), name, lastname, stof(pln), stof(eur), stof(usd), stof(gbp), stof(czk));
 	return user;
 }
 
@@ -425,78 +425,37 @@ void LoggedUser::accMenu() {
 
 void LoggedUser::transfer() {
 	clearScreen();
-	string name, lastname, accNr, text;
-	bool status1 = false;
+	string accNr, text;
+	bool status1 = false, matchA = false;
+	vector<string> pos;
 
 	cout << "\t\t\tPodaj numer konta odbiorcy: ";
 	cin >> accNr;
-	if (accNr.length() != 7) {
-		while (true) {
-			cout << "\n\t\t\tPodany numer konta jest nieprawid³owy\n\n\n";
-			cout << "\t\t\t|Naciœnij 1. aby SPRÓWBOWAÆ PONOWNIE\n\n\n";
-			cout << "\t\t\t|Naciœniej 2. aby wróciæ do MENU KONTA\n\n\n";
-			cout << "\t\t\t<1-2>: ";
-			int UserChoice1;
-			cin >> UserChoice1;
-			switch (UserChoice1) {
-			case 1:
-				clearScreen();
-				transfer();
-				break;
-			case 2:
-				clearScreen();
-				accMenu();
-				break;
-			default:
-				continue;
-			}
+
+	ifstream file("konta.txt");
+
+	if (file.good()) {	//wpisywanie danych do wektora
+		while (getline(file, text, ';')) {
+			pos.push_back(text);
 		}
+		file.close();
+	}
+	else {
+		cout << "Wyst¹pi³ problem!";
 	}
 
-	ifstream plik("konta.txt");
-	if (plik.good() == false)
-	{
-		cout << "\t\t\tWyst¹pi³ b³¹d!";
-		exit(0);
-	}
-
-	while (!plik.eof())
-	{
-		while (getline(plik, text))
-		{
-			if (!(string::npos == text.find(accNr))) //sprawdza czy istnieje podany numer konta
-			{
-				status1 = true;
-				break;
+	while (!matchA) {
+		for (int i = 2; i < pos.size(); i += 11) {
+			if (pos.at(i) == accNr) {
+				matchA = true;
 			}
 		}
-		if (status1 == false)
-		{
-			while (true)
-			{
-				clearScreen();
-				cout << "\t\t\tPodany numer nie jest przypisany do ¿adnego konta!\n\n\n";
-				cout << "\t\t\t|Naciœnij 1. aby SPRÓBOWAÆ PONOWNIE.\n\n\n";
-				cout << "\t\t\t|Naciœnij 2. aby wróciæ do MENU KONTA.\n\n\n";
-				cout << "\t\t\t<1-2>: ";
-				int UserChoice2;
-				cin >> UserChoice2;
-				switch (UserChoice2)
-				{
-				case 1:
-					clearScreen();
-					transfer();
-					break;
-				case 2:
-					clearScreen();
-					accMenu();
-					break;
-				default:
-					continue;
-				}
-			}
+		if (!matchA) {
+			clearScreen();
+			cout << "\t\t\tPodany numer konta nie istnieje!\n\n";
+			cout << "\t\t\tSpróbuj jeszcze raz: ";
+			cin >> accNr;
 		}
-		break;
 	}
 
 	cout << "\n\t\t\tWybierz walute przelewu: ";
@@ -516,11 +475,11 @@ void LoggedUser::transfer() {
 	else if (UserChoice3 == 5) i = 10;
 
 
-	double budget;
+	float budget;
 	budget = account[i - 6].value;
 	cout << budget;
 	cout << "\n\t\t\tPodaj kwote przelewu: ";
-	double value;
+	float value;
 	cin >> value;
 	if (value > budget) {
 		cout << "\n\t\t\tNie masz wystarczaj¹cych œrodków na koncie!\n";
@@ -544,7 +503,7 @@ void LoggedUser::transfer() {
 
 	int x = 0;
 	string sum, resault;
-	double newSum;
+	float newSum;
 	for (int j = 0; j < text.length(); j++) {
 		if (x == i) {
 			i = j;
@@ -552,12 +511,8 @@ void LoggedUser::transfer() {
 				sum += text[i];
 				i++;
 			}
-			newSum = stod(sum) + value;
+			newSum = stof(sum) + value;
 			resault = to_string(newSum);
-			resault.pop_back();
-			resault.pop_back();
-			resault.pop_back();
-			resault.pop_back();
 			resault += ";";
 			text.replace(j, i, resault);
 		}
@@ -569,7 +524,6 @@ void LoggedUser::transfer() {
 	int a;
 	cin >> a;
 
-	plik.close();
 }
 
 void LoggedUser::exchange() {
