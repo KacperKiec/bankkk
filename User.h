@@ -22,7 +22,7 @@ public:
 	
 public:
 	virtual void transfer() = 0;
-	virtual void exchange() = 0;
+	virtual float* exchange() = 0;
 	virtual void clearScreen() = 0;
 };
 
@@ -37,7 +37,7 @@ private:
 
 	array<currency, 5> account;
 
-	void updateAcc(int currencyIndexInFile, float value, int id); //indexy w pliku textowym PLN-6, EUR-7, USD-8, GBP-9, CZK-10
+	void updateInFile(int currencyIndexInFile, float value, int id); //indexy w pliku textowym PLN-6, EUR-7, USD-8, GBP-9, CZK-10
 
 	int getId();
 	string getFullName();
@@ -54,7 +54,9 @@ public:
 
 	void accMenu();
 
+	void updateBalance(int currencyIndexInFile, float value, LoggedUser& u);
+
 	virtual void clearScreen() override;
 	virtual void transfer() override;
-	virtual void exchange() override;
+	virtual float* exchange() override;
 };
