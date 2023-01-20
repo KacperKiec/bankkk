@@ -572,7 +572,7 @@ void LoggedUser::transfer() {
 	plik.close();
 }
 
-void LoggedUser::exchange() {
+float* LoggedUser::exchange() {
 	unsigned int option1, option2, operation;
 	float value, afterOperation, newValue{};
 	double pln{ getCurrency(0).value };
@@ -636,10 +636,13 @@ void LoggedUser::exchange() {
 		pln -= afterOperation;
 		newValue += value;
 	}
-
+	updateInFile(6, pln, getId());
+	updateInFile(6+option2, newValue, getId());
+	float tab[5]{ 6, pln, option2 + 6, newValue };
+	return tab;
 }
 
-void LoggedUser::updateAcc(int currencyIndexInFile, float value, int id) {
+void LoggedUser::updateInFile(int currencyIndexInFile, float value, int id) {
 	string text;
 	vector<string> data;
 	int temp{ 0 };
@@ -660,7 +663,6 @@ void LoggedUser::updateAcc(int currencyIndexInFile, float value, int id) {
 
 	temp = id * 11 + currencyIndexInFile;
 	data.at(temp) = to_string(value);
-	cout << temp;
 
 	file.close();
 
@@ -685,4 +687,11 @@ void LoggedUser::updateAcc(int currencyIndexInFile, float value, int id) {
 		}
 		file.close();
 	}
+
+	
+}
+
+void LoggedUser::updateBalance(int currencyIndexInFile, float value, LoggedUser& u) {
+	LoggedUser* us{ &u };
+	us->account[currencyIndexInFile-6].value = value;
 }

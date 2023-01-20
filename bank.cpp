@@ -31,21 +31,30 @@ int main()
 		main();
 	}
 
-	LoggedUser* us = signIn();
+	LoggedUser* us{signIn()};
 	us->accMenu();
 
 	User* user = us;
 
 	int operation;
+	float* ptr{ nullptr };
 	
-	while (cin >> operation) {
+	
+	while (true) {
+		cin >> operation;
 		switch (operation) {
 		case 1:
 			user->clearScreen();
 			user->transfer();
+			us->accMenu();
 		case 2:
 			user->clearScreen();
-			user->exchange();
+			ptr = user->exchange();
+			us->updateBalance(ptr[0], ptr[1], *us);
+			us->updateBalance(ptr[2], ptr[3], *us);
+			user->clearScreen();
+			us->accMenu();
+			continue;
 		case 3:
 			user->clearScreen();
 			main();
@@ -54,5 +63,7 @@ int main()
 			us->accMenu();
 		}
 	}
+	
+	delete user, us;
 	return 0;
 }
